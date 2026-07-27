@@ -1,0 +1,87 @@
+version: "2"
+
+run:
+  go: "1.22"
+
+linters:
+  default: none
+  enable:
+    - bodyclose
+    - copyloopvar
+    - dogsled
+    - dupl
+    - errcheck
+    - exhaustive
+    - funlen
+    - gochecknoinits
+    - goconst
+    - gocritic
+    - gocyclo
+    - goprintffuncname
+    - gosec
+    - govet
+    - ineffassign
+    - lll
+    - mnd
+    - nakedret
+    - noctx
+    - nolintlint
+    - rowserrcheck
+    - staticcheck
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
+  settings:
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+      exclude-functions:
+        - (io.ReadCloser).Close
+    goconst:
+      min-len: 2
+      min-occurrences: 2
+    gocritic:
+      enabled-tags:
+        - diagnostic
+        - experimental
+        - opinionated
+        - performance
+        - style
+      disabled-checks:
+        - dupImport
+        - ifElseChain
+        - octalLiteral
+        - whyNoLint
+    gocyclo:
+      min-complexity: 15
+    lll:
+      line-length: 140
+    mnd:
+      checks:
+        - argument
+        - case
+        - condition
+        - return
+    nolintlint:
+      allow-unused: false
+      require-explanation: false
+      require-specific: false
+  exclusions:
+    rules:
+      - path: _test\.go
+        linters:
+          - mnd
+          - funlen
+          - gocyclo
+          - dupl
+          - goconst
+      # The models package mirrors the API's response schemas, which contain
+      # legitimately near-identical exported structs.
+      - path: ^models/
+        linters:
+          - dupl
+      # Endpoint methods intentionally share the same fetch-and-decode shape.
+      - linters:
+          - dupl
+        path: \.go$
