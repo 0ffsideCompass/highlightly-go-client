@@ -110,29 +110,20 @@ func (c *Client) Players(
 	return &resp, nil
 }
 
-// Player hits the /players/{id} endpoint. It returns a single player summary
-// by ID.
-func (c *Client) Player(id int) (*models.Player, error) {
+// Player hits the /players/{id} endpoint. It returns a single player's full
+// detail (profile, rumours, transfers, market value, injuries) by ID.
+func (c *Client) Player(id int) (*models.PlayerDetail, error) {
 	endpointURL := fmt.Sprintf("%s%s/%d", c.Domain, playersEndpoint, id)
 	body, err := c.get(endpointURL)
 	if err != nil {
 		return nil, fmt.Errorf("error getting player: %w", err)
 	}
 
-	var resp models.Player
-	err = json.Unmarshal(body, &resp)
-	if err != nil {
-		return nil, fmt.Errorf(
-			"error unmarshalling player response: %w",
-			err,
-		)
-	}
-
-	return &resp, nil
+	return firstFromArray[models.PlayerDetail](body, "player")
 }
 
 // PlayerStatistics hits the /players/{id}/statistics endpoint. It returns the
-// statistics of a player.
+// per-competition statistics of a player.
 func (c *Client) PlayerStatistics(id int) (*models.PlayerStatistics, error) {
 	endpointURL := fmt.Sprintf("%s%s/%d/statistics", c.Domain, playersEndpoint, id)
 	body, err := c.get(endpointURL)
@@ -140,14 +131,5 @@ func (c *Client) PlayerStatistics(id int) (*models.PlayerStatistics, error) {
 		return nil, fmt.Errorf("error getting player statistics: %w", err)
 	}
 
-	var resp models.PlayerStatistics
-	err = json.Unmarshal(body, &resp)
-	if err != nil {
-		return nil, fmt.Errorf(
-			"error unmarshalling player statistics response: %w",
-			err,
-		)
-	}
-
-	return &resp, nil
+	return firstFromArray[models.PlayerStatistics](body, "player statistics")
 }

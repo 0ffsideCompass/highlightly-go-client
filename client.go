@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -98,6 +99,20 @@ func (c *Client) get(endpoint string) ([]byte, error) {
 	}
 
 	return io.ReadAll(res.Body)
+}
+
+// firstFromArray decodes a single-resource response. The API wraps every
+// by-ID resource in a JSON array (usually with one element); the first
+// element is returned, and an empty array is reported as not found.
+func firstFromArray[T any](body []byte, what string) (*T, error) {
+	var items []T
+	if err := json.Unmarshal(body, &items); err != nil {
+		return nil, fmt.Errorf("error unmarshalling %s response: %w", what, err)
+	}
+	if len(items) == 0 {
+		return nil, fmt.Errorf("%s not found", what)
+	}
+	return &items[0], nil
 }
 
 // paramString formats a query parameter value. JSON-decoded numbers arrive as

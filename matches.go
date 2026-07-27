@@ -80,26 +80,18 @@ func (c *Client) Match(id int) (*models.Match, error) {
 		return nil, fmt.Errorf("error getting match: %w", err)
 	}
 
-	var resp models.Match
-	err = json.Unmarshal(body, &resp)
-	if err != nil {
-		return nil, fmt.Errorf(
-			"error unmarshalling match response: %w",
-			err,
-		)
-	}
-
-	return &resp, nil
+	return firstFromArray[models.Match](body, "match")
 }
 
-// LastFiveGames hits the /last-five-games endpoint
+// LastFiveGames hits the /last-five-games endpoint. The endpoint returns a
+// bare JSON array of matches.
 /*
 	- teamId: (Type: integer) (Required)
 	  The ID of the team. Value format: 3057
 */
 func (c *Client) LastFiveGames(
 	params map[string]any,
-) (*models.MatchList, error) {
+) ([]models.Match, error) {
 	// Validate the parameters
 	if err := requireIntParams(params, "teamId"); err != nil {
 		return nil, err
@@ -116,7 +108,7 @@ func (c *Client) LastFiveGames(
 		return nil, fmt.Errorf("error getting last five games: %w", err)
 	}
 
-	var resp models.MatchList
+	var resp []models.Match
 	err = json.Unmarshal(body, &resp)
 	if err != nil {
 		return nil, fmt.Errorf(
@@ -125,10 +117,11 @@ func (c *Client) LastFiveGames(
 		)
 	}
 
-	return &resp, nil
+	return resp, nil
 }
 
-// HeadToHead hits the /head-2-head endpoint
+// HeadToHead hits the /head-2-head endpoint. The endpoint returns a bare
+// JSON array of matches.
 /*
 	- teamIdOne: (Type: integer) (Required)
 	  The ID of the first team. Value format: 3057
@@ -137,7 +130,7 @@ func (c *Client) LastFiveGames(
 */
 func (c *Client) HeadToHead(
 	params map[string]any,
-) (*models.MatchList, error) {
+) ([]models.Match, error) {
 	// Validate the parameters
 	if err := requireIntParams(params, "teamIdOne", "teamIdTwo"); err != nil {
 		return nil, err
@@ -154,7 +147,7 @@ func (c *Client) HeadToHead(
 		return nil, fmt.Errorf("error getting head to head: %w", err)
 	}
 
-	var resp models.MatchList
+	var resp []models.Match
 	err = json.Unmarshal(body, &resp)
 	if err != nil {
 		return nil, fmt.Errorf(
@@ -163,7 +156,7 @@ func (c *Client) HeadToHead(
 		)
 	}
 
-	return &resp, nil
+	return resp, nil
 }
 
 // Lineups hits the /lineups/{matchId} endpoint. It returns both teams'

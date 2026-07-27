@@ -2,12 +2,17 @@ package models
 
 // Highlight represents a video highlight clip
 type Highlight struct {
-	ID     int    `json:"id"`
-	Title  string `json:"title"`
-	Type   string `json:"type"`
-	URL    string `json:"url"`
-	ImgURL string `json:"imgUrl"`
-	Match  Match  `json:"match"`
+	ID          int    `json:"id"`
+	Type        string `json:"type"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	URL         string `json:"url"`
+	EmbedURL    string `json:"embedUrl"`
+	ImgURL      string `json:"imgUrl"`
+	Channel     string `json:"channel"`
+	Source      string `json:"source"`
+	Category    string `json:"category"`
+	Match       Match  `json:"match"`
 }
 
 // HighlightList is the response from the /highlights endpoint
@@ -17,7 +22,9 @@ type HighlightList struct {
 	Pagination Pagination  `json:"pagination"`
 }
 
-// GeoRestriction is the response from the /highlights/geo-restrictions/{id} endpoint
+// GeoRestriction is the response from the /highlights/geo-restrictions/{id}
+// endpoint. The endpoint is only available on paid plans, so this shape
+// follows the published documentation.
 type GeoRestriction struct {
 	HighlightID      int      `json:"highlightId"`
 	BlockedCountries []string `json:"blockedCountries"`

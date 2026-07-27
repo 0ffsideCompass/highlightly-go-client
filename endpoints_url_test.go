@@ -15,6 +15,9 @@ func TestEndpointURLs(t *testing.T) {
 		name        string
 		call        func(cli *client.Client) error
 		expectedURL string
+		// body is the mock response; single resources decode from an array,
+		// list endpoints from their wrapper (or a bare array).
+		body string
 	}{
 		{
 			name: "Countries",
@@ -23,6 +26,7 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/countries?name=England",
+			body:        `[]`,
 		},
 		{
 			name: "Country",
@@ -31,6 +35,7 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/countries/GB",
+			body:        `[{}]`,
 		},
 		{
 			name: "Leagues",
@@ -47,6 +52,7 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/leagues/2486",
+			body:        `[{}]`,
 		},
 		{
 			name: "Highlights",
@@ -63,6 +69,7 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/highlights/99",
+			body:        `[{}]`,
 		},
 		{
 			name: "HighlightGeoRestrictions",
@@ -87,6 +94,7 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/matches/1028043",
+			body:        `[{}]`,
 		},
 		{
 			name: "LastFiveGames",
@@ -95,6 +103,7 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/last-five-games?teamId=3057",
+			body:        `[]`,
 		},
 		{
 			name: "HeadToHead",
@@ -103,6 +112,7 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/head-2-head?teamIdOne=3057&teamIdTwo=3068",
+			body:        `[]`,
 		},
 		{
 			name: "Lineups",
@@ -119,6 +129,7 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/events/1028043",
+			body:        `[]`,
 		},
 		{
 			name: "Bookmakers",
@@ -135,6 +146,7 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/bookmakers/1",
+			body:        `[{}]`,
 		},
 		{
 			name: "Odds",
@@ -159,6 +171,7 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/teams/statistics/3057?fromDate=2023-08-12",
+			body:        `[]`,
 		},
 		{
 			name: "MatchStatistics",
@@ -167,6 +180,7 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/statistics/1028043",
+			body:        `[]`,
 		},
 		{
 			name: "Players",
@@ -183,6 +197,7 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/players/5001",
+			body:        `[{}]`,
 		},
 		{
 			name: "PlayerStatistics",
@@ -191,6 +206,7 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/players/5001/statistics",
+			body:        `[{}]`,
 		},
 		{
 			name: "Teams",
@@ -207,12 +223,17 @@ func TestEndpointURLs(t *testing.T) {
 				return err
 			},
 			expectedURL: "https://sports.highlightly.net/football/teams/3057",
+			body:        `[{}]`,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mock := newMockClient(http.StatusOK, `{}`)
+			body := tt.body
+			if body == "" {
+				body = `{}`
+			}
+			mock := newMockClient(http.StatusOK, body)
 			cli, err := client.New("test-api-key", mock)
 			assert.NoError(t, err)
 

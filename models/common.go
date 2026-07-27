@@ -33,16 +33,17 @@ func (f *FlexString) UnmarshalJSON(data []byte) error {
 
 // Pagination represents the paging information in list responses
 type Pagination struct {
-	Limit  int `json:"limit"`
-	Offset int `json:"offset"`
-	Total  int `json:"total"`
+	TotalCount int `json:"totalCount"`
+	Offset     int `json:"offset"`
+	Limit      int `json:"limit"`
 }
 
-// PlanMeta describes the API plan and quota usage returned alongside list responses
+// PlanMeta describes the API plan returned alongside list responses. Message
+// carries plan-coverage notices such as "Some results might be hidden with
+// FREE tier."
 type PlanMeta struct {
-	Tier         string `json:"tier"`
-	RequestLimit int    `json:"requestLimit"`
-	RequestCount int    `json:"requestCount"`
+	Tier    string `json:"tier"`
+	Message string `json:"message"`
 }
 
 // Country represents a country
@@ -52,13 +53,20 @@ type Country struct {
 	Logo string `json:"logo"`
 }
 
-// League represents a league for a given season
+// LeagueSeason is one season a league covers
+type LeagueSeason struct {
+	Season int `json:"season"`
+}
+
+// League represents a league. Top-level league resources carry the Seasons
+// list; leagues nested inside matches carry the single Season year instead.
 type League struct {
-	ID      int     `json:"id"`
-	Name    string  `json:"name"`
-	Logo    string  `json:"logo"`
-	Season  int     `json:"season"`
-	Country Country `json:"country"`
+	ID      int            `json:"id"`
+	Name    string         `json:"name"`
+	Logo    string         `json:"logo"`
+	Season  int            `json:"season"`
+	Seasons []LeagueSeason `json:"seasons"`
+	Country Country        `json:"country"`
 }
 
 // Team represents a team
@@ -66,18 +74,13 @@ type Team struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 	Logo string `json:"logo"`
+	Type string `json:"type"`
 }
 
-// Player represents a player
+// Player represents a player as returned by the players list
 type Player struct {
 	ID       int    `json:"id"`
 	Name     string `json:"name"`
-	Number   int    `json:"number"`
-	Position string `json:"position"`
-}
-
-// StatisticValue is a single named statistic
-type StatisticValue struct {
-	Name  string     `json:"name"`
-	Value FlexString `json:"value"`
+	FullName string `json:"fullName"`
+	Logo     string `json:"logo"`
 }

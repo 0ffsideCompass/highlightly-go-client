@@ -58,16 +58,7 @@ func (c *Client) Country(countryCode string) (*models.Country, error) {
 		return nil, fmt.Errorf("error getting country: %w", err)
 	}
 
-	var resp models.Country
-	err = json.Unmarshal(body, &resp)
-	if err != nil {
-		return nil, fmt.Errorf(
-			"error unmarshalling country response: %w",
-			err,
-		)
-	}
-
-	return &resp, nil
+	return firstFromArray[models.Country](body, "country")
 }
 
 // Leagues hits the /leagues endpoint
@@ -121,14 +112,5 @@ func (c *Client) League(id int) (*models.League, error) {
 		return nil, fmt.Errorf("error getting league: %w", err)
 	}
 
-	var resp models.League
-	err = json.Unmarshal(body, &resp)
-	if err != nil {
-		return nil, fmt.Errorf(
-			"error unmarshalling league response: %w",
-			err,
-		)
-	}
-
-	return &resp, nil
+	return firstFromArray[models.League](body, "league")
 }

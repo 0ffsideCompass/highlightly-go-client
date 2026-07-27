@@ -58,16 +58,7 @@ func (c *Client) Bookmaker(id int) (*models.Bookmaker, error) {
 		return nil, fmt.Errorf("error getting bookmaker: %w", err)
 	}
 
-	var resp models.Bookmaker
-	err = json.Unmarshal(body, &resp)
-	if err != nil {
-		return nil, fmt.Errorf(
-			"error unmarshalling bookmaker response: %w",
-			err,
-		)
-	}
-
-	return &resp, nil
+	return firstFromArray[models.Bookmaker](body, "bookmaker")
 }
 
 // Odds hits the /odds endpoint

@@ -80,16 +80,7 @@ func (c *Client) Highlight(id int) (*models.Highlight, error) {
 		return nil, fmt.Errorf("error getting highlight: %w", err)
 	}
 
-	var resp models.Highlight
-	err = json.Unmarshal(body, &resp)
-	if err != nil {
-		return nil, fmt.Errorf(
-			"error unmarshalling highlight response: %w",
-			err,
-		)
-	}
-
-	return &resp, nil
+	return firstFromArray[models.Highlight](body, "highlight")
 }
 
 // HighlightGeoRestrictions hits the /highlights/geo-restrictions/{id}

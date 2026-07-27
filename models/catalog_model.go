@@ -1,9 +1,8 @@
 package models
 
-// CountryList is the response from the /countries endpoint
-type CountryList struct {
-	Data []Country `json:"data"`
-}
+// CountryList is the response from the /countries endpoint, which returns a
+// bare JSON array.
+type CountryList []Country
 
 // LeagueList is the response from the /leagues endpoint
 type LeagueList struct {

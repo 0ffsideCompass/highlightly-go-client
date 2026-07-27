@@ -58,14 +58,5 @@ func (c *Client) Team(id int) (*models.Team, error) {
 		return nil, fmt.Errorf("error getting team: %w", err)
 	}
 
-	var resp models.Team
-	err = json.Unmarshal(body, &resp)
-	if err != nil {
-		return nil, fmt.Errorf(
-			"error unmarshalling team response: %w",
-			err,
-		)
-	}
-
-	return &resp, nil
+	return firstFromArray[models.Team](body, "team")
 }
