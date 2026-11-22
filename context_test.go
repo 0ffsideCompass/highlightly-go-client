@@ -14,7 +14,9 @@ func TestRequestScopedContextDoesNotMutateSharedClient(t *testing.T) {
 	var calls atomic.Int32
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		calls.Add(1)
-		_, _ = w.Write([]byte(`[]`))
+		if _, err := w.Write([]byte(`[]`)); err != nil {
+			t.Error(err)
+		}
 	}))
 	defer srv.Close()
 	c, err := NewWithDomain("test-key", srv.URL, srv.Client())

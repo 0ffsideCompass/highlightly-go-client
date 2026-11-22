@@ -44,9 +44,9 @@ type Client struct {
 // WithContext returns a request-scoped view of the client. It shares the HTTP
 // client and connection pool and never mutates the original client.
 func (c *Client) WithContext(ctx context.Context) *Client {
-	copy := *c
-	copy.ctx = ctx
-	return &copy
+	view := *c
+	view.ctx = ctx
+	return &view
 }
 
 // New creates a new Client instance for the Highlightly API using the default
