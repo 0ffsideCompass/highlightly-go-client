@@ -38,6 +38,15 @@ type Client struct {
 	key    string
 	Domain string
 	client HttpClient
+	ctx    context.Context
+}
+
+// WithContext returns a request-scoped view of the client. It shares the HTTP
+// client and connection pool and never mutates the original client.
+func (c *Client) WithContext(ctx context.Context) *Client {
+	copy := *c
+	copy.ctx = ctx
+	return &copy
 }
 
 // New creates a new Client instance for the Highlightly API using the default
@@ -73,7 +82,14 @@ func NewWithDomain(key, domain string, client HttpClient) (*Client, error) {
 }
 
 func (c *Client) get(endpoint string) ([]byte, error) {
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, endpoint, http.NoBody)
+	ctx := c.ctx
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, endpoint, http.NoBody)
 	if err != nil {
 		return nil, err
 	}
